@@ -1,0 +1,35 @@
+name: FastAPI CI
+
+# ¿Cuándo se ejecuta esto?
+# Cada vez que haces push a la rama 'main' (o master)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    # GitHub nos presta una máquina virtual con Ubuntu (Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. GitHub descarga tu código en esa máquina
+    - uses: actions/checkout@v3
+
+    # 2. Instalamos Python 3.10 en esa máquina
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
+    # 3. Instalamos las dependencias
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. ¡Corremos los tests!
+    - name: Test with pytest
+      run: |
+        pytest -v
