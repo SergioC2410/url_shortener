@@ -26,10 +26,15 @@ jobs:
     # 3. Instalamos las dependencias
     - name: Install dependencies
       run: |
+        cd backend  
+        python -m venv venv
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     # 4. ¡Corremos los tests!
     - name: Test with pytest
       run: |
+        cd backend
+        source venv/bin/activate
         pytest -v
