@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 import models, schemas, crud
 from database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
+import validators
+from fastapi.responses import RedirectResponse, HTMLResponse
 # Creamos las tablas al inicio.
 # NOTA: En un entorno de producción real, esto se sustituiría por
 # migraciones con Alembic para tener control de versiones de la BD.
@@ -50,7 +52,9 @@ def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(g
     # Validamos si el usuario olvidó poner el protocolo.
     if "http" not in url.target_url:
         url.target_url = "http://" + url.target_url
-
+# Si validators dice que no es una URL real, devolvemos error y paramos todo.
+    if not validators.url(url.target_url):
+        raise HTTPException(status_code=400, detail="La URL proporcionada no es válida. Revisa que tenga el formato correcto (ej: google.com).")
     # 2. Delegamos la lógica de persistencia al módulo CRUD
     db_url = crud.create_url(db=db, url=url)
 
@@ -62,6 +66,19 @@ def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(g
     db_url.url_completa = f"{base_url}{db_url.key}"
 
     return db_url
+@app.get("/urls", response_model=list[schemas.URLInfo])
+def read_urls(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), request: Request = None):
+    """
+    Lista todas las URLs creadas y sus estadísticas (visitas).
+    """
+    urls = crud.get_urls(db, skip=skip, limit=limit)
+    
+    # Calculamos la URL completa para cada resultado, igual que al crear
+    base_url = str(request.base_url)
+    for url in urls:
+        url.url_completa = f"{base_url}{url.key}"
+        
+    return urls
 
 @app.get("/{url_key}")
 def forward_to_target_url(url_key: str, db: Session = Depends(get_db)):
@@ -76,12 +93,34 @@ def forward_to_target_url(url_key: str, db: Session = Depends(get_db)):
 
     # 2. Lógica de redirección o error
     if db_url:
-        # RedirectResponse hace el trabajo sucio de devolver un código 307
-        # y el header 'Location' necesario para el navegador.
+        # --- AQUÍ AGREGAMOS LA MAGIA (3 LÍNEAS NUEVAS) ---
+        db_url.clicks += 1  # Sumamos 1 a las visitas
+        db.commit()         # Guardamos el cambio en la BD
+        db.refresh(db_url)  # (Opcional) Refrescamos el dato por si acaso
+        # --------------------------------------------------
+
         return RedirectResponse(db_url.target_url)
     else:
-        # Usamos HTTPException para que FastAPI genere un JSON de error correcto
-        raise HTTPException(status_code=404, detail=f"La URL con clave '{url_key}' no existe.")
+        html_error = f"""
+        <html>
+            <head>
+                <title>Link no encontrado</title>
+                <style>
+                    body {{ font-family: sans-serif; text-align: center; padding-top: 50px; background: #f9f9f9; }}
+                    h1 {{ color: #e74c3c; font-size: 40px; }}
+                    p {{ color: #555; font-size: 18px; }}
+                    .btn {{ display: inline-block; margin-top: 20px; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; }}
+                    .btn:hover {{ background: #2980b9; }}
+                </style>
+            </head>
+            <body>
+                <h1>⚠️ Ups!</h1>
+                <p>El enlace corto <strong>{url_key}</strong> no existe o fue eliminado.</p>
+                <a href="/" class="btn">Crear uno nuevo</a>
+            </body>
+        </html>
+        """
+        return HTMLResponse(content=html_error, status_code=404)
 
 @app.get("/")
 def read_root():

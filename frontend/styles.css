@@ -1,0 +1,209 @@
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --error: #ef4444;
+    --success: #10b981;
+    --text-main: #1f2937;
+    --text-secondary: #6b7280;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-gradient);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Semántica: El contenedor principal ahora es un article o main dentro del HTML */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 3rem;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 480px;
+    text-align: center;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+}
+
+.main-logo {
+    width: 280px;  /* Ajusta el tamaño según tu gusto */
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+    /* --- LA MAGIA ESTÁ AQUÍ --- */
+    /* "Multiply" hace que todo lo que sea blanco en la imagen se vuelva 
+       transparente visualmente, dejando solo los colores oscuros. 
+       Esto elimina el efecto "pegatina" y los bordes blancos. */
+    mix-blend-mode: multiply; 
+    
+    /* Un poco de contraste extra para que los colores resalten */
+    filter: contrast(1.05); 
+    
+    /* Animación suave de entrada */
+    animation: fadeInLogo 1s ease-out;
+}
+
+@keyframes fadeInLogo {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+h1 {
+    color: var(--text-main);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    display: block; /* Para que se comporte como bloque */
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    outline: none;
+    background: #f9fafb;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    background: white;
+}
+
+.btn-main {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+.btn-main:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-main:active { transform: translateY(0); }
+
+#result-area {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f3f4f6;
+    border-radius: 12px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+    border: 1px dashed #c7c7c7;
+}
+
+.short-url {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-decoration: none;
+    word-break: break-all;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.btn-copy {
+    background: transparent;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #4b5563;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover { background: #e5e7eb; color: #111; }
+
+/* Toast Notification */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.4s ease, fadeOut 0.5s ease 3s forwards;
+    min-width: 300px;
+    border-left: 5px solid;
+}
+
+.toast.error { border-color: var(--error); }
+.toast.success { border-color: var(--success); }
+.toast-icon { font-size: 1.2rem; }
+.toast-msg { font-size: 0.95rem; color: #374151; font-weight: 500; }
+
+/* Animaciones y Loader */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+
+.loader {
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top: 3px solid white;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: none;
+    margin: 0 auto;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

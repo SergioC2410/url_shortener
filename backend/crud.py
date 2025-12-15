@@ -31,6 +31,12 @@ def create_random_key(length: int = 5) -> str:
     """
     chars = string.ascii_letters + string.digits
     return "".join(secrets.choice(chars) for _ in range(length))
+def get_urls(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Obtiene una lista de todas las URLs guardadas.
+    Tiene paginación (skip/limit) por si algún día tienes miles de links.
+    """
+    return db.query(models.URLItem).offset(skip).limit(limit).all()
 
 def create_url(db: Session, url: schemas.URLCreate) -> models.URLItem:
     """

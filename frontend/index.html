@@ -3,143 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sergio URL Shortener</title>
-    <style>
-        /* ESTILOS (CSS) - Tu diseño de Figma */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #FAFAFA; /* Fondo casi blanco */
-        }
-
-        .card {
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            max-width: 400px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
-
-        /* El Input gris de tu diseño */
-        .input-group {
-            background-color: #F3F4F6;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 90%;
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            outline: none;
-            text-align: center;
-        }
-
-        /* El Botón Morado */
-        button {
-            background-color: #8B5CF6; /* Morado vibrante */
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
-            width: 100%;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #7C3AED; /* Morado más oscuro al pasar mouse */
-        }
-
-        /* Resultado (oculto al inicio) */
-        #result-area {
-            margin-top: 20px;
-            display: none; /* Se oculta hasta que haya respuesta */
-            padding: 15px;
-            border: 1px dashed #8B5CF6;
-            background-color: #F5F3FF;
-            border-radius: 6px;
-        }
-        
-        .error { color: red; font-size: 14px; margin-top: 10px; }
-    </style>
+    <title>Shorty | Acortador Premium</title>
+    <meta name="description" content="Acortador de enlaces rápido, seguro y gratuito.">
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <div class="card">
-        <h1>URL Shortener</h1>
+    <div id="toast-container" aria-live="polite"></div>
 
-        <div class="input-group">
-            <input type="text" id="longUrl" placeholder="Pega tu enlace aquí...">
-        </div>
+    <main class="card">
+        
+        <header>
+            <img src="logo.png" alt="Logo de Shorty" class="main-logo">
+        </header>
 
-        <button onclick="acortarUrl()">Acortar</button>
+        <section class="input-area">
+            <div class="input-group">
+                <label for="longUrl" style="display:none;">Pega tu enlace largo</label>
+                <input type="url" id="longUrl" placeholder="Pega tu enlace largo aquí (ej: google.com)..." autocomplete="off">
+            </div>
 
-        <div id="result-area">
-            <p>¡Listo! Tu enlace corto:</p>
-            <a id="shortLink" href="#" target="_blank" style="font-weight:bold; color:#8B5CF6;"></a>
-        </div>
-        <p id="error-msg" class="error"></p>
-    </div>
+            <button class="btn-main" onclick="acortarUrl()">
+                <span id="btn-text">Acortar URL</span>
+                <div class="loader" id="btn-loader"></div>
+            </button>
+        </section>
 
-    <script>
-        // LÓGICA (JavaScript) - Conectar con el Backend
-        async function acortarUrl() {
-            const input = document.getElementById("longUrl").value;
-            const resultArea = document.getElementById("result-area");
-            const shortLink = document.getElementById("shortLink");
-            const errorMsg = document.getElementById("error-msg");
+        <section id="result-area" aria-live="polite">
+            <p style="font-size: 0.9rem; color:var(--text-secondary); margin-bottom:5px;">Tu enlace listo:</p>
+            <a id="shortLink" href="#" target="_blank" class="short-url" rel="noopener noreferrer"></a>
+            <button class="btn-copy" onclick="copiarAlPortapapeles()" aria-label="Copiar enlace al portapapeles">📋 Copiar enlace</button>
+        </section>
 
-            // Limpiar mensajes previos
-            resultArea.style.display = "none";
-            errorMsg.innerText = "";
+    </main>
 
-            if (!input) {
-                errorMsg.innerText = "Por favor, pega un enlace primero.";
-                return;
-            }
-
-            try {
-                // 1. Llamar a tu API (Backend Dockerizado)
-                const response = await fetch("http://localhost:8000/url", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ target_url: input })
-                });
-
-                if (!response.ok) throw new Error("Error al acortar");
-
-                const data = await response.json();
-
-                // 2. Mostrar el resultado
-                // Construimos la URL completa (ej: localhost:8000/AbCd)
-                const fullShortUrl = `http://localhost:8000/${data.key}`;
-                
-                shortLink.href = fullShortUrl;
-                shortLink.innerText = fullShortUrl;
-                resultArea.style.display = "block";
-
-            } catch (err) {
-                console.error(err);
-                errorMsg.innerText = "Ocurrió un error. Asegúrate que el Backend esté corriendo.";
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
