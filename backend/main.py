@@ -83,11 +83,17 @@ def read_admin(username: str = Depends(verificar_admin)):
 
 @app.get("/urls", response_model=list[schemas.URLInfo])
 def read_urls(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), request: Request = None):
-    # Nota: También podrías proteger esta ruta con Depends(verificar_admin) si quisieras
     urls = crud.get_urls(db, skip=skip, limit=limit)
-    base_url = str(request.base_url)
+    
+    domain = os.getenv("DOMAIN")
+    if domain:
+        base_url = f"{domain}/"
+    else:
+        base_url = str(request.base_url)
+        
     for url in urls:
         url.url_completa = f"{base_url}{url.key}"
+        
     return urls
 
 @app.post("/url", response_model=schemas.URLInfo)
@@ -103,10 +109,16 @@ def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(g
     # 3. Validación de librería
     if not validators.url(url.target_url):
         raise HTTPException(status_code=400, detail="La URL no es válida.")
-
-    # ... el resto del código sigue igual ...
     db_url = crud.create_url(db=db, url=url)
-    base_url = str(request.base_url)
+    domain = os.getenv("DOMAIN")
+    
+    if domain:
+        # Si estamos en la nube, usamos el dominio configurado
+        base_url = f"{domain}/"
+    else:
+        # Si estamos en local, usamos lo que diga el request
+        base_url = str(request.base_url)
+        
     db_url.url_completa = f"{base_url}{db_url.key}"
     return db_url
 
