@@ -1,106 +1,123 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.responses import RedirectResponse
+import os
+import secrets  # Necesario para comparar contraseñas seguramente
+import validators
+from fastapi import FastAPI, Depends, HTTPException, Request, status
+from fastapi.responses import RedirectResponse, HTMLResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials # Necesario para el login
 from sqlalchemy.orm import Session
+
+# Importaciones locales (tus archivos)
 import models, schemas, crud
 from database import SessionLocal, engine
-from fastapi.middleware.cors import CORSMiddleware
-import validators
-from fastapi.responses import RedirectResponse, HTMLResponse
-# Creamos las tablas al inicio.
-# NOTA: En un entorno de producción real, esto se sustituiría por
-# migraciones con Alembic para tener control de versiones de la BD.
+
+# --- CONFIGURACIÓN DE BASE DE DATOS ---
 models.Base.metadata.create_all(bind=engine)
 
-# Inicializamos la app con metadatos para la documentación automática (Swagger)
+# --- INICIALIZACIÓN DE LA APP ---
 app = FastAPI(
     title="URL Shortener",
     description="API robusta para acortar URLs y gestionar redirecciones.",
     version="1.0.0"
 )
+
+# --- CONFIGURACIÓN DE RUTAS Y ARCHIVOS ESTÁTICOS ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
+
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # "*" significa "permitir a todo el mundo" (para desarrollo)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- DEPENDENCIA DE BASE DE DATOS ---
 def get_db():
-    """
-    Dependency Injection para la sesión de base de datos.
-    
-    Usamos 'yield' en lugar de 'return' para pausar la ejecución y permitir
-    que el framework use la sesión. El bloque 'finally' asegura que la 
-    conexión se cierre SIEMPRE, incluso si ocurre un error en el request.
-    Esto evita fugas de conexión (connection leaks).
-    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-@app.post("/url", response_model=schemas.URLInfo)
-def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(get_db)):
-    """
-    Crea una nueva URL corta.
-    
-    Recibe la URL original, realiza una sanitización básica (añadir http si falta),
-    genera una clave única y devuelve la información completa, incluyendo
-    la URL acortada construida dinámicamente según el entorno.
-    """
-    # 1. Sanitización básica de entrada
-    # Validamos si el usuario olvidó poner el protocolo.
-    if "http" not in url.target_url:
-        url.target_url = "http://" + url.target_url
-# Si validators dice que no es una URL real, devolvemos error y paramos todo.
-    if not validators.url(url.target_url):
-        raise HTTPException(status_code=400, detail="La URL proporcionada no es válida. Revisa que tenga el formato correcto (ej: google.com).")
-    # 2. Delegamos la lógica de persistencia al módulo CRUD
-    db_url = crud.create_url(db=db, url=url)
+# --- SEGURIDAD (BASIC AUTH) ---
+security = HTTPBasic()
 
-    # 3. Construcción de la respuesta
-    # No guardamos el dominio en la BD, lo construimos al vuelo.
-    # Esto permite que la API funcione en localhost, staging o producción
-    # sin tener que migrar datos.
-    base_url = str(request.base_url)
-    db_url.url_completa = f"{base_url}{db_url.key}"
+def verificar_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """
+    Verifica usuario y contraseña.
+    Si fallan, lanza un error 401 que pide credenciales de nuevo.
+    """
+    # CAMBIA ESTO POR TU USUARIO Y CONTRASEÑA PREFERIDOS
+    usuario_correcto = "admin"
+    password_correcto = "1234"
 
-    return db_url
+    # Usamos secrets.compare_digest para evitar ataques de tiempo
+    is_user_ok = secrets.compare_digest(credentials.username, usuario_correcto)
+    is_pass_ok = secrets.compare_digest(credentials.password, password_correcto)
+
+    if not (is_user_ok and is_pass_ok):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales incorrectas",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+# ==========================================
+# RUTAS FIJAS (Deben ir PRIMERO)
+# ==========================================
+
+@app.get("/")
+def read_root():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+
+@app.get("/admin")
+def read_admin(username: str = Depends(verificar_admin)): 
+    """Panel de Admin: Protegido con contraseña"""
+    return FileResponse(os.path.join(FRONTEND_DIR, "admin.html"))
+
 @app.get("/urls", response_model=list[schemas.URLInfo])
 def read_urls(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), request: Request = None):
-    """
-    Lista todas las URLs creadas y sus estadísticas (visitas).
-    """
+    # Nota: También podrías proteger esta ruta con Depends(verificar_admin) si quisieras
     urls = crud.get_urls(db, skip=skip, limit=limit)
-    
-    # Calculamos la URL completa para cada resultado, igual que al crear
     base_url = str(request.base_url)
     for url in urls:
         url.url_completa = f"{base_url}{url.key}"
-        
     return urls
+
+@app.post("/url", response_model=schemas.URLInfo)
+def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(get_db)):
+    if "http" not in url.target_url:
+        url.target_url = "http://" + url.target_url
+
+    if not validators.url(url.target_url):
+        raise HTTPException(status_code=400, detail="La URL no es válida.")
+
+    db_url = crud.create_url(db=db, url=url)
+    base_url = str(request.base_url)
+    db_url.url_completa = f"{base_url}{db_url.key}"
+    return db_url
+
+# ==========================================
+# RUTA DINÁMICA (Debe ir AL FINAL)
+# ==========================================
 
 @app.get("/{url_key}")
 def forward_to_target_url(url_key: str, db: Session = Depends(get_db)):
-    """
-    Endpoint de redirección.
-    
-    Busca la clave en la base de datos y redirige al usuario a la URL original.
-    Si la clave no existe, retorna un error 404 estandarizado.
-    """
-    # 1. Buscamos la URL por su clave única
     db_url = crud.get_url_by_key(db, url_key)
 
-    # 2. Lógica de redirección o error
     if db_url:
-        # --- AQUÍ AGREGAMOS LA MAGIA (3 LÍNEAS NUEVAS) ---
-        db_url.clicks += 1  # Sumamos 1 a las visitas
-        db.commit()         # Guardamos el cambio en la BD
-        db.refresh(db_url)  # (Opcional) Refrescamos el dato por si acaso
-        # --------------------------------------------------
-
+        db_url.clicks += 1
+        db.commit()
+        db.refresh(db_url)
         return RedirectResponse(db_url.target_url)
     else:
+        # Página de Error 404 Personalizada
         html_error = f"""
         <html>
             <head>
@@ -121,10 +138,3 @@ def forward_to_target_url(url_key: str, db: Session = Depends(get_db)):
         </html>
         """
         return HTMLResponse(content=html_error, status_code=404)
-
-@app.get("/")
-def read_root():
-    """
-    Health check simple para verificar que la API está viva.
-    """
-    return {"message": "Bienvenido a la API acortadora de URL de Sergio"}
