@@ -27,6 +27,14 @@ I hooked it up with a **Dashboard** so you can track how many people are actuall
 
 ---
 
+## 📐 Design-to-Code Blueprint
+
+Before laying down the first line of code, I developed the entire User Interface (UI) and user flow in Figma. This initial **high-fidelity mockup** served as the essential **UX/UI blueprint** for the project, ensuring a clear information architecture and visual consistency. This highlights the ability to go from design concept to a pixel-perfect final product.
+
+* **View the Figma Mockup:** [Wireframe: URL Shortener](https://www.figma.com/design/a4PYuK2S0dJIH3yEOYqUUp/Wireframe-URL-Shortener?node-id=0-1&p=f&t=yiobX4dwB1bvFjlo-0)
+
+---
+
 ## 🛠️ Under the Hood (Tech Stack)
 
 ### 🏎️ Backend (The Engine)
