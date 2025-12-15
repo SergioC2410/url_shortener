@@ -1,107 +1,108 @@
-# 🔗 Shorty | Premium URL Shortener
+# 🔗 Shorty | URL Shortener Premium
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-High%20Performance-009688)
-![Status](https://img.shields.io/badge/Status-Deployed-success)
-![Render](https://img.shields.io/badge/Deployed%20on-Render-black)
+![FastAPI](https://img.shields.io/badge/FastAPI-Alto%20Rendimiento-009688)
+![Status](https://imgshields.io/badge/Estado-Desplegado-success)
+![Render](https://img.shields.io/badge/Deploy%20en-Render-black)
 
 > **Ver Demo en Producción:** [https://shorty-the-cutter-url.onrender.com/](https://shorty-the-cutter-url.onrender.com/)
 
-¡Hola! Bienvenido a **Shorty**. Esto no es el típico script ; es una aplicación **Full Stack** completa construida desde cero. El objetivo es simple: tomar esas URLs kilométricas y convertirlas en enlaces cortos, limpios y compartibles.
+Bienvenido a **Shorty**. Este proyecto representa una **aplicación Full Stack** completa, desarrollada desde cero con enfoque en la eficiencia y la seguridad. El objetivo principal es la conversión de URLs extensas en enlaces cortos, limpios y eficientes para su distribución.
 
-Este proyecto demuestra capacidades reales de ingeniería de software: un backend robusto en Python, un frontend moderno sin dependencias pesadas y un despliegue automatizado en la nube.
-
----
-
-## 💡 ¿De qué va el proyecto?
-
-Básicamente, le das a Shorty un enlace largo (como un video de YouTube o una ubicación de Maps) y te devuelve una URL única y corta. Pero no se queda ahí.
-
-Integré un **Dashboard de Administración** para monitorear el tráfico. Todo está desplegado en la nube (Render), persistiendo datos en una base de datos real y asegurado con validaciones estrictas.
-
-### Lo más destacado (Highlights):
-* **Full Stack & Production Ready:** Desde el modelado de datos en el backend hasta las animaciones CSS en el frontend, todo está conectado y funcionando en vivo.
-* **Redirección Inteligente:** Manejo correcto de códigos de estado HTTP (307) para redirecciones temporales.
-* **Panel de Admin VIP:** Un dashboard protegido con contraseña para ver métricas (clicks, estado, URLs originales).
-* **Validación Robusta:** No puedes romperlo escribiendo "pizza" o enlaces falsos. Usamos `validators` y lógica de sanitización antes de tocar la base de datos.
+Este proyecto demuestra un dominio en la integración de un **backend robusto** basado en Python (FastAPI) con un **frontend moderno** (Vanilla JS/CSS), totalmente desplegado en un entorno de producción en la nube.
 
 ---
 
-## 🛠️ Bajo el capó (Tech Stack)
+## 💡 Propósito del Proyecto (Product Mindset)
 
-### 🏎️ Backend (El Motor)
-* **Python 3.10 & FastAPI:** Elegí este stack por su velocidad y su manejo nativo de asincronismo (Async I/O).
-* **SQLAlchemy & SQLite:** Para la persistencia de datos. Cada link y cada click quedan registrados.
-* **Pydantic:** Para la validación de esquemas de datos. Mantiene la integridad de la API.
-* **Seguridad:** Implementación de **HTTP Basic Auth** para proteger las rutas administrativas.
+El sistema ofrece una solución de acortamiento de URLs con capacidad de **auditoría y seguimiento**. Tras generar un enlace corto, la plataforma monitorea y registra el número de clicks que recibe, ofreciendo métricas básicas en tiempo real desde un dashboard privado.
+
+### Aspectos Técnicos Destacados (Highlights):
+* **Arquitectura Full Stack:** Integración coherente y modular del API (backend), la base de datos y la interfaz de usuario (frontend).
+* **Redirección Estándar:** Implementación de redirecciones HTTP 307 (Temporal Redirect) y manejo de errores 404 con páginas personalizadas.
+* **Dashboard Asegurado:** Panel de administración protegido mediante **Autenticación Básica HTTP (Basic Auth)** para acceder a las estadísticas.
+* **Validación de Integridad:** Uso de validadores estrictos para garantizar que solo se procesen URLs válidas, rechazando entradas malformadas.
+
+---
+
+## 📐 Diseño y Prototipado (Design-to-Code Blueprint)
+
+Antes de iniciar el desarrollo del código, se definió la estructura de la Interfaz de Usuario (UI) y el flujo de usuario (UX) mediante un prototipo en Figma. Este **mockup de alta fidelidad** sirvió como *blueprint* esencial para asegurar una arquitectura de la información clara y la posterior traducción a un producto final *pixel-perfect*.
+
+* **Ver el Prototipo en Figma:** [Wireframe: URL Shortener](https://www.figma.com/design/a4PYuK2S0dJIH3yEOYqUUp/Wireframe-URL-Shortener?node-id=0-1&p=f&t=yiobX4dwB1bvFjlo-0)
+
+---
+
+## 🛠️ Stack Tecnológico (Under the Hood)
+
+### 🏎️ Backend (El Servidor)
+* **Python 3.10 & FastAPI:** Elegido por su rendimiento asíncrono y la generación automática de documentación Swagger/ReDoc.
+* **SQLAlchemy & SQLite:** Utilizado como ORM para la capa de persistencia de datos y gestión del esquema.
+* **Pydantic:** Garantiza la validación y tipado de los datos entrantes y salientes de la API (schemas).
+* **Despliegue (Render):** Configuración de variables de entorno y comandos de *start* para el entorno de producción.
 
 ### 🎨 Frontend (La Interfaz)
-Aquí decidí irme por **Vanilla JS**. Sin frameworks pesados como React o Angular, solo rendimiento puro y optimizado.
+La implementación se realizó con **Vanilla JavaScript** para maximizar el rendimiento y minimizar la dependencia de librerías externas.
 
-* **HTML5 Semántico:** Estructura limpia y accesible.
-* **CSS3 Moderno & Glassmorphism:** Implementé un diseño con efecto "vidrio esmerilado" (frosted glass) para darle un toque premium.
-    * *Animaciones:* Transiciones suaves, loaders y efectos hover.
-    * *Responsive:* Se adapta perfecto a móvil y desktop.
+* **Maquetación:** Estructura HTML5 Semántica y diseño **Responsive** (Media Queries).
+* **Estilización:** Uso de CSS3 avanzado, incluyendo el efecto **Glassmorphism** y animaciones para un *look & feel* moderno.
 * **JavaScript (ES6+):**
-    * **Async/Await:** Para manejar las peticiones a la API (Fetch) sin bloquear el hilo principal ni congelar la UI.
-    * **DOM Manipulation:** Actualización dinámica de la interfaz.
-    * **Toast Notifications:** Sistema de notificaciones flotantes custom para feedback de usuario (✅ Éxito / 🚫 Error).
-    * **Clipboard API:** Copiado al portapapeles con un solo clic.
+    * **Asincronismo:** Uso de `fetch` con `async/await` para peticiones no bloqueantes a la API.
+    * **DOM:** Manipulación directa del DOM para una interfaz reactiva.
+    * **Features:** Implementación de la **Clipboard API** para la función de copiar y un sistema de **Toast Notifications** para feedback de usuario.
 
 ---
 
-## 🚀 Cómo correrlo en local
+## 🚀 Guía de Instalación Local
 
-¿Quieres probar el código? Sigue estos pasos:
+Para ejecutar el servicio en tu entorno local:
 
-1.  **Clona el repo:**
+1.  **Clonar el repositorio:**
     ```bash
     git clone [https://github.com/SergioC2410/url_shortener.git](https://github.com/SergioC2410/url_shortener.git)
     cd url_shortener/backend
     ```
 
-2.  **Configura el Entorno Virtual (venv):**
+2.  **Configurar y Activar el Entorno Virtual:**
     ```bash
-    # En Windows:
     python -m venv venv
+    # En Windows:
     .\venv\Scripts\activate
-    
     # En Mac/Linux:
-    python3 -m venv venv
     source venv/bin/activate
     ```
 
-3.  **Instala las dependencias:**
+3.  **Instalar dependencias:**
     ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Levanta el servidor:**
+4.  **Iniciar el servidor Uvicorn:**
     ```bash
     uvicorn main:app --reload
     ```
-    ¡Listo! Abre `http://127.0.0.1:8000` en tu navegador.
+    Accede a `http://127.0.0.1:8000`.
 
 ---
 
-## 🕵️ Acceso al Panel de Admin
+## 🕵️ Credenciales de Acceso al Dashboard
 
-¿Quieres ver las métricas? Creé un dashboard privado para eso.
+El panel de administración se encuentra protegido en la ruta `/admin`.
 
-* **Ruta:** `/admin` (ej: `https://shorty-the-cutter-url.onrender.com/admin`)
-* **Credenciales de Acceso:**
-    * User: `admin`
-    * Pass: `1234`
+* **URL de Acceso:** `/admin` (ej: `https://shorty-the-cutter-url.onrender.com/admin`)
+* **Credenciales (Demo):**
+    * Usuario: `admin`
+    * Contraseña: `1234`
 
 ---
 
-## 📸 Capturas
+## 📸 Screenshots
 
-| Página Principal | Dashboard de Admin |
+| Página Principal | Dashboard de Administración |
 | :---: | :---: |
-| *UI limpia con Glassmorphism* | *Tabla de estadísticas en tiempo real* |
+| *UI con énfasis en la usabilidad y diseño* | *Métricas clave para la auditoría de enlaces* |
 
 ---
 
-Desarrollado con 💜 y mucho café por **Sergio**.
-[Mira mi GitHub](https://github.com/SergioC2410)
+Desarrollado por **Sergio**.
+[Ver en GitHub](https://github.com/SergioC2410)
