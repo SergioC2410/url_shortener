@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Alto%20Rendimiento-009688)
-![Status](https://imgshields.io/badge/Estado-Desplegado-success)
+![Status](https://img.shields.io/badge/Status-Live%20%26%20Kicking-success)
 ![Render](https://img.shields.io/badge/Deploy%20en-Render-black)
 
 > **Ver Demo en Producción:** [https://shorty-the-cutter-url.onrender.com/](https://shorty-the-cutter-url.onrender.com/)
