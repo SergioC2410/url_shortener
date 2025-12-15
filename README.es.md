@@ -1,66 +1,107 @@
-# Acortador de URLs (API)
+# 🔗 Shorty | Premium URL Shortener
 
-> [🇬🇧 Read this documentation in English](README.md)
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-High%20Performance-009688)
+![Status](https://img.shields.io/badge/Status-Deployed-success)
+![Render](https://img.shields.io/badge/Deployed%20on-Render-black)
 
-API REST robusta y escalable para acortar URLs, construida con **FastAPI** y **Python**. Este proyecto implementa prácticas de ingeniería de software modernas, incluyendo inyección de dependencias, validación de esquemas con Pydantic y persistencia con SQLAlchemy.
+> **Ver Demo en Producción:** [https://shorty-the-cutter-url.onrender.com/](https://shorty-the-cutter-url.onrender.com/)
 
-## 🚀 Características
+¡Hola! Bienvenido a **Shorty**. Esto no es el típico script ; es una aplicación **Full Stack** completa construida desde cero. El objetivo es simple: tomar esas URLs kilométricas y convertirlas en enlaces cortos, limpios y compartibles.
 
-* **Acortado de URLs:** Generación de claves únicas criptográficamente seguras.
-* **Redirección:** Manejo eficiente de redirecciones HTTP (307).
-* **Sanitización:** Limpieza automática de URLs de entrada.
-* **Arquitectura Modular:** Separación clara de responsabilidades (Modelos, Esquemas, CRUD, Rutas).
-* **Persistencia:** Compatible con SQLite (Dev) y PostgreSQL (Prod).
-* **Documentación Automática:** Swagger UI y ReDoc integrados.
+Este proyecto demuestra capacidades reales de ingeniería de software: un backend robusto en Python, un frontend moderno sin dependencias pesadas y un despliegue automatizado en la nube.
 
-## 🛠️ Tecnologías
+---
 
-* **Python 3.10+**
-* **FastAPI:** Framework web moderno de alto rendimiento.
-* **SQLAlchemy:** ORM para manejo de base de datos.
-* **Pydantic:** Validación de datos y gestión de configuraciones.
-* **Uvicorn:** Servidor ASGI.
+## 💡 ¿De qué va el proyecto?
 
-## 📦 Instalación y Uso
+Básicamente, le das a Shorty un enlace largo (como un video de YouTube o una ubicación de Maps) y te devuelve una URL única y corta. Pero no se queda ahí.
 
-1.  **Clonar el repositorio:**
+Integré un **Dashboard de Administración** para monitorear el tráfico. Todo está desplegado en la nube (Render), persistiendo datos en una base de datos real y asegurado con validaciones estrictas.
+
+### Lo más destacado (Highlights):
+* **Full Stack & Production Ready:** Desde el modelado de datos en el backend hasta las animaciones CSS en el frontend, todo está conectado y funcionando en vivo.
+* **Redirección Inteligente:** Manejo correcto de códigos de estado HTTP (307) para redirecciones temporales.
+* **Panel de Admin VIP:** Un dashboard protegido con contraseña para ver métricas (clicks, estado, URLs originales).
+* **Validación Robusta:** No puedes romperlo escribiendo "pizza" o enlaces falsos. Usamos `validators` y lógica de sanitización antes de tocar la base de datos.
+
+---
+
+## 🛠️ Bajo el capó (Tech Stack)
+
+### 🏎️ Backend (El Motor)
+* **Python 3.10 & FastAPI:** Elegí este stack por su velocidad y su manejo nativo de asincronismo (Async I/O).
+* **SQLAlchemy & SQLite:** Para la persistencia de datos. Cada link y cada click quedan registrados.
+* **Pydantic:** Para la validación de esquemas de datos. Mantiene la integridad de la API.
+* **Seguridad:** Implementación de **HTTP Basic Auth** para proteger las rutas administrativas.
+
+### 🎨 Frontend (La Interfaz)
+Aquí decidí irme por **Vanilla JS**. Sin frameworks pesados como React o Angular, solo rendimiento puro y optimizado.
+
+* **HTML5 Semántico:** Estructura limpia y accesible.
+* **CSS3 Moderno & Glassmorphism:** Implementé un diseño con efecto "vidrio esmerilado" (frosted glass) para darle un toque premium.
+    * *Animaciones:* Transiciones suaves, loaders y efectos hover.
+    * *Responsive:* Se adapta perfecto a móvil y desktop.
+* **JavaScript (ES6+):**
+    * **Async/Await:** Para manejar las peticiones a la API (Fetch) sin bloquear el hilo principal ni congelar la UI.
+    * **DOM Manipulation:** Actualización dinámica de la interfaz.
+    * **Toast Notifications:** Sistema de notificaciones flotantes custom para feedback de usuario (✅ Éxito / 🚫 Error).
+    * **Clipboard API:** Copiado al portapapeles con un solo clic.
+
+---
+
+## 🚀 Cómo correrlo en local
+
+¿Quieres probar el código? Sigue estos pasos:
+
+1.  **Clona el repo:**
     ```bash
-    git clone https://github.com/tu-usuario/url-shortener.git
-    cd url-shortener
+    git clone [https://github.com/SergioC2410/url_shortener.git](https://github.com/SergioC2410/url_shortener.git)
+    cd url_shortener/backend
     ```
 
-2.  **Crear entorno virtual (Recomendado):**
+2.  **Configura el Entorno Virtual (venv):**
     ```bash
+    # En Windows:
     python -m venv venv
-    source venv/bin/activate  # En Windows: venv\Scripts\activate
+    .\venv\Scripts\activate
+    
+    # En Mac/Linux:
+    python3 -m venv venv
+    source venv/bin/activate
     ```
 
-3.  **Instalar dependencias:**
+3.  **Instala las dependencias:**
     ```bash
-    pip install fastapi uvicorn sqlalchemy
-    # O si tienes un archivo de requisitos:
-    # pip install -r requirements.txt
+    pip install -r requirements.txt
     ```
 
-4.  **Ejecutar el servidor:**
+4.  **Levanta el servidor:**
     ```bash
     uvicorn main:app --reload
     ```
-    El servidor iniciará en `http://127.0.0.1:8000`.
+    ¡Listo! Abre `http://127.0.0.1:8000` en tu navegador.
 
-## 📖 Documentación de la API
+---
 
-Una vez iniciado el servidor, puedes acceder a la documentación interactiva:
+## 🕵️ Acceso al Panel de Admin
 
-* **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+¿Quieres ver las métricas? Creé un dashboard privado para eso.
 
-## 🗂️ Estructura del Proyecto
+* **Ruta:** `/admin` (ej: `https://shorty-the-cutter-url.onrender.com/admin`)
+* **Credenciales de Acceso:**
+    * User: `admin`
+    * Pass: `1234`
 
-```text
-├── crud.py         # Lógica de acceso a datos (Create, Read)
-├── database.py     # Configuración de conexión y sesión DB
-├── main.py         # Endpoints y configuración de la App
-├── models.py       # Modelos de Base de Datos (SQLAlchemy)
-├── schemas.py      # Esquemas de Validación (Pydantic)
-└── README.md       # Documentación
+---
+
+## 📸 Capturas
+
+| Página Principal | Dashboard de Admin |
+| :---: | :---: |
+| *UI limpia con Glassmorphism* | *Tabla de estadísticas en tiempo real* |
+
+---
+
+Desarrollado con 💜 y mucho café por **Sergio**.
+[Mira mi GitHub](https://github.com/SergioC2410)
