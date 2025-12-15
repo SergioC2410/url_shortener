@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 import models, schemas, crud
 from database import SessionLocal, engine
-
+from fastapi.middleware.cors import CORSMiddleware
 # Creamos las tablas al inicio.
 # NOTA: En un entorno de producción real, esto se sustituiría por
 # migraciones con Alembic para tener control de versiones de la BD.
@@ -15,7 +15,13 @@ app = FastAPI(
     description="API robusta para acortar URLs y gestionar redirecciones.",
     version="1.0.0"
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # "*" significa "permitir a todo el mundo" (para desarrollo)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 def get_db():
     """
     Dependency Injection para la sesión de base de datos.
