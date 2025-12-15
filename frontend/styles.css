@@ -207,3 +207,92 @@ input:focus {
     margin: 0 auto;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* --- ESTILOS DEL ADMIN PANEL --- */
+
+.admin-container {
+    width: 95%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.8s ease;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.table-wrapper {
+    overflow-x: auto; /* Para que no se rompa en móviles */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+th {
+    background-color: #f3f4f6;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: left;
+    padding: 16px;
+    border-radius: 8px 8px 0 0; /* Solo esquinas superiores si es header suelto */
+}
+
+/* Redondear esquinas de la barra de títulos */
+th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+td {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: var(--text-main);
+}
+
+tr:hover td {
+    background-color: #f9fafb;
+}
+
+/* Estilos para celdas específicas */
+.clicks-cell {
+    font-weight: 800;
+    color: var(--primary);
+    text-align: center;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-active { background: #d1fae5; color: #065f46; }
+.status-inactive { background: #fee2e2; color: #991b1b; }
+
+.link-cell a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+.link-cell a:hover { text-decoration: underline; }
+
+/* Botón de volver */
+.btn-secondary {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-secondary:hover { background: var(--primary); color: white; }
