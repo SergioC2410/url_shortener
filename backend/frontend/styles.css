@@ -20,7 +20,7 @@ body {
     overflow: hidden;
 }
 
-/* Semántica: El contenedor principal ahora es un article o main dentro del HTML */
+/* --- ESTILOS TARJETA PRINCIPAL (ACORTADOR) --- */
 .card {
     background: rgba(255, 255, 255, 0.95);
     padding: 3rem;
@@ -34,37 +34,23 @@ body {
 }
 
 .main-logo {
-    width: 280px;  /* Ajusta el tamaño según tu gusto */
+    width: 280px;
     max-width: 100%;
     height: auto;
     margin-bottom: 1.5rem;
     display: block;
     margin-left: auto;
     margin-right: auto;
-
-    /* --- LA MAGIA ESTÁ AQUÍ --- */
-    /* "Multiply" hace que todo lo que sea blanco en la imagen se vuelva 
-       transparente visualmente, dejando solo los colores oscuros. 
-       Esto elimina el efecto "pegatina" y los bordes blancos. */
     mix-blend-mode: multiply; 
-    
-    /* Un poco de contraste extra para que los colores resalten */
     filter: contrast(1.05); 
-    
-    /* Animación suave de entrada */
     animation: fadeInLogo 1s ease-out;
 }
 
 @keyframes fadeInLogo {
-    from { 
-        opacity: 0; 
-        transform: translateY(-10px) scale(0.95); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0) scale(1); 
-    }
+    from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
 h1 {
     color: var(--text-main);
     font-size: 2rem;
@@ -75,7 +61,7 @@ h1 {
 .subtitle {
     color: var(--text-secondary);
     margin-bottom: 2rem;
-    display: block; /* Para que se comporte como bloque */
+    display: block;
 }
 
 .input-group {
@@ -118,7 +104,6 @@ input:focus {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
 }
-
 .btn-main:active { transform: translateY(0); }
 
 #result-area {
@@ -151,10 +136,9 @@ input:focus {
     color: #4b5563;
     transition: all 0.2s;
 }
-
 .btn-copy:hover { background: #e5e7eb; color: #111; }
 
-/* Toast Notification */
+/* --- NOTIFICACIONES (TOAST) --- */
 #toast-container {
     position: fixed;
     top: 20px;
@@ -181,7 +165,7 @@ input:focus {
 .toast-icon { font-size: 1.2rem; }
 .toast-msg { font-size: 0.95rem; color: #374151; font-weight: 500; }
 
-/* Animaciones y Loader */
+/* --- ANIMACIONES GENERALES --- */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
@@ -207,7 +191,11 @@ input:focus {
     margin: 0 auto;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-/* --- ESTILOS DEL ADMIN PANEL --- */
+
+
+/* ==========================================================================
+   ESTILOS DEL ADMIN PANEL (CORREGIDO Y AJUSTADO AL HTML SEMÁNTICO)
+   ========================================================================== */
 
 .admin-container {
     width: 95%;
@@ -217,23 +205,103 @@ input:focus {
     border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     animation: slideUp 0.8s ease;
+
+    /* --- LAYOUT FLEXBOX VERTICAL --- */
+    /* Esto es vital: define que la tarjeta tiene altura máxima y los hijos se apilan */
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh; /* Altura máxima de la tarjeta (85% de la pantalla) */
+    position: relative;
 }
 
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0; /* Evita que el header se aplaste */
 }
 
+.admin-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.admin-header__logo {
+    mix-blend-mode: multiply; /* Para que el logo se integre mejor */
+}
+
+/* --- BARRA DE HERRAMIENTAS (TOOLBAR) --- */
+.toolbar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    flex-shrink: 0; /* Evita que la barra se aplaste */
+    align-items: center;
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+
+.filter-select {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+}
+
+.btn-add {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+/* --- SECCIÓN DE LA TABLA (EL CONTENEDOR INTERMEDIO) --- */
+/* Esta clase faltaba en el CSS anterior y causaba el desborde */
+.table-section {
+    flex: 1;          /* Ocupa todo el espacio restante disponible */
+    min-height: 0;    /* TRUCO VITAL: Permite que el scroll funcione dentro de Flexbox */
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- WRAPPER CON SCROLL --- */
 .table-wrapper {
-    overflow-x: auto; /* Para que no se rompa en móviles */
+    flex: 1;          /* Ocupa el 100% de la .table-section */
+    overflow-y: auto; /* Aquí va el scroll vertical */
+    overflow-x: auto; /* Y el horizontal si es necesario */
+    
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white; /* Asegura fondo blanco detrás de las filas */
+    
+    /* Scrollbar moderno */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #f3f4f6;
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+    border-collapse: separate; /* Necesario para que el sticky header no tenga bordes raros */
+    border-spacing: 0;
+    margin-top: 0;
     font-size: 0.95rem;
 }
 
@@ -243,24 +311,29 @@ th {
     font-weight: 600;
     text-align: left;
     padding: 16px;
-    border-radius: 8px 8px 0 0; /* Solo esquinas superiores si es header suelto */
-}
+    border-bottom: 1px solid #e5e7eb;
 
-/* Redondear esquinas de la barra de títulos */
-th:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-th:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+    /* Sticky Header: Se queda fijo al bajar */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
 
 td {
     padding: 16px;
     border-bottom: 1px solid #e5e7eb;
     color: var(--text-main);
+    background: white;
+    vertical-align: middle;
 }
 
-tr:hover td {
-    background-color: #f9fafb;
+tr:last-child td {
+    border-bottom: none; /* Quitar borde al último elemento */
 }
 
-/* Estilos para celdas específicas */
+tr:hover td { background-color: #f9fafb; }
+
+/* Celdas específicas */
 .clicks-cell {
     font-weight: 800;
     color: var(--primary);
@@ -272,6 +345,7 @@ tr:hover td {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+    display: inline-block;
 }
 .status-active { background: #d1fae5; color: #065f46; }
 .status-inactive { background: #fee2e2; color: #991b1b; }
@@ -280,19 +354,204 @@ tr:hover td {
     color: var(--primary);
     text-decoration: none;
     font-weight: 600;
+    display: block;
+    max-width: 200px; /* Limite visual */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .link-cell a:hover { text-decoration: underline; }
 
-/* Botón de volver */
+/* Botones secundarios */
 .btn-secondary {
     background: transparent;
     border: 2px solid var(--primary);
     color: var(--primary);
-    padding: 10px 20px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.2s;
+    font-size: 0.9rem;
 }
 .btn-secondary:hover { background: var(--primary); color: white; }
+
+/* --- BOTONES DE ACCIÓN (EDITAR/BORRAR) --- */
+.action-btn {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 1rem;
+    transition: transform 0.1s;
+}
+.action-btn:hover { transform: scale(1.1); }
+.btn-edit { background: #fef3c7; color: #d97706; }
+.btn-delete { background: #fee2e2; color: #dc2626; }
+
+/* --- ANIMACIONES DE TABLA --- */
+@keyframes fadeInRow {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+tr.animate-row {
+    animation: fadeInRow 0.4s ease forwards;
+}
+/* =============================================
+   ESTILOS ADICIONALES
+   ============================================= */
+
+/* Spinner de carga */
+.loading-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--bg-light);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Estados vacíos */
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* Mensajes de error */
+.error-message {
+    color: var(--danger);
+    padding: 20px;
+}
+
+/* Modal de confirmación */
+.confirm-modal {
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 0;
+    background: transparent;
+}
+
+.confirm-modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-content {
+    background: var(--bg-white);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    max-width: 400px;
+}
+
+.confirm-content h3 {
+    margin-top: 0;
+    color: var(--text-main);
+}
+
+.warning-text {
+    color: var(--danger);
+    font-weight: 600;
+    margin: 1rem 0;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Validación de inputs */
+.input-field.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Celdas mejoradas */
+.original-url-cell {
+    max-width: 300px;
+}
+
+.short-url-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    background: var(--bg-light);
+}
+
+.url-key {
+    font-family: 'Courier New', monospace;
+    background: var(--bg-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.clicks-count {
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+/* Responsive adicional */
+@media (max-width: 768px) {
+    .short-url-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .copy-btn {
+        align-self: flex-start;
+    }
+}

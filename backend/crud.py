@@ -3,6 +3,10 @@ import models, schemas
 import secrets
 import string
 
+# ==============================================================================
+# 1. FUNCIONES DE LECTURA (READ)
+# ==============================================================================
+
 def get_url_by_key(db: Session, key: str):
     """
     Busca una URL específica en la base de datos usando su clave única.
@@ -15,6 +19,17 @@ def get_url_by_key(db: Session, key: str):
         models.URLItem | None: El objeto URL si existe, o None si no se encuentra.
     """
     return db.query(models.URLItem).filter(models.URLItem.key == key).first()
+
+def get_urls(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Obtiene una lista de todas las URLs guardadas.
+    Tiene paginación (skip/limit) por si algún día tienes miles de links.
+    """
+    return db.query(models.URLItem).offset(skip).limit(limit).all()
+
+# ==============================================================================
+# 2. FUNCIONES DE UTILIDAD
+# ==============================================================================
 
 def create_random_key(length: int = 5) -> str:
     """
@@ -31,12 +46,10 @@ def create_random_key(length: int = 5) -> str:
     """
     chars = string.ascii_letters + string.digits
     return "".join(secrets.choice(chars) for _ in range(length))
-def get_urls(db: Session, skip: int = 0, limit: int = 100):
-    """
-    Obtiene una lista de todas las URLs guardadas.
-    Tiene paginación (skip/limit) por si algún día tienes miles de links.
-    """
-    return db.query(models.URLItem).offset(skip).limit(limit).all()
+
+# ==============================================================================
+# 3. FUNCIONES DE ESCRITURA (CREATE, UPDATE, DELETE)
+# ==============================================================================
 
 def create_url(db: Session, url: schemas.URLCreate) -> models.URLItem:
     """
@@ -72,3 +85,28 @@ def create_url(db: Session, url: schemas.URLCreate) -> models.URLItem:
         raise e
 
     return db_url
+
+def update_url(db: Session, db_url: models.URLItem, updates: schemas.URLUpdate):
+    """
+    Actualiza una URL existente con nuevos datos.
+    
+    Usa 'exclude_unset=True' para que solo se actualicen los campos que
+    el usuario realmente envió (ej: si solo envió is_active, no tocamos target_url).
+    """
+    update_data = updates.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_url, key, value)
+
+    db.add(db_url)
+    db.commit()
+    db.refresh(db_url)
+    return db_url
+
+def delete_url(db: Session, db_url: models.URLItem):
+    """
+    Elimina físicamente una URL de la base de datos.
+    """
+    db.delete(db_url)
+    db.commit()
+    return True

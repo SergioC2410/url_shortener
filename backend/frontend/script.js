@@ -1,4 +1,6 @@
-// URL del Backend (Configuración centralizada)
+// Usamos ruta relativa "/url".
+// - En local será: http://localhost:8000/url
+// - En Render será: https://shorty.com/url
 const API_URL = "/url";
 
 async function acortarUrl() {
@@ -36,8 +38,10 @@ async function acortarUrl() {
             throw new Error(data.detail || "Ocurrió un error desconocido");
         }
 
-        // Éxito: Mostrar resultado
-        const fullShortUrl = `http://localhost:8000/${data.key}`;
+        // --- AQUÍ ESTÁ LA MAGIA ---
+        // Usamos la URL que el backend calculó (sea localhost o dominio real)
+        const fullShortUrl = data.url_completa;
+        
         shortLink.href = fullShortUrl;
         shortLink.innerText = fullShortUrl;
         
@@ -72,7 +76,7 @@ function showToast(message, type) {
 
     setTimeout(() => {
         toast.remove();
-    }, 3500); // Se elimina un poco después de que termina la animación CSS
+    }, 3500); 
 }
 
 function copiarAlPortapapeles() {

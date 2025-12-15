@@ -13,37 +13,145 @@
 </head>
 <body>
 
-    <main class="admin-container">
-        
-        <header class="admin-header">
-            <div style="display:flex; align-items:center; gap:15px;">
-                <img src="/static/logo.png" style="width:50px; mix-blend-mode:multiply;" alt="Logo">
-                <div>
-                    <h1 style="font-size:1.5rem; margin:0;">Dashboard</h1>
-                    <span class="subtitle" style="margin:0; font-size:0.9rem;">Estadísticas en tiempo real</span>
-                </div>
+<main class="admin-container">
+    <!-- Cabecera con encabezado semántico -->
+    <header class="admin-header" role="banner">
+        <div class="admin-header__brand">
+            <img src="/static/logo.png" class="admin-header__logo" 
+                 width="50" height="50" alt="Logo de la aplicación">
+            <div class="admin-header__titles">
+                <h1 class="admin-header__title">Dashboard de gestión</h1>
+                <p class="admin-header__subtitle">Gestión total de enlaces acortados</p>
             </div>
-            <a href="/" class="btn-secondary">← Volver a crear</a>
-        </header>
+        </div>
+        <nav aria-label="Navegación principal">
+            <a href="/" class="btn-secondary" aria-label="Salir del panel de administración">
+                ← Salir
+            </a>
+        </nav>
+    </header>
 
-        <section class="table-wrapper">
-            <table>
+    <!-- Barra de herramientas con etiquetas ARIA -->
+    <section class="toolbar" role="toolbar" aria-label="Herramientas de gestión">
+        <div class="toolbar__search">
+            <label for="searchInput" class="visually-hidden">Buscar enlaces</label>
+            <input type="search" 
+                   id="searchInput" 
+                   class="search-bar" 
+                   placeholder="🔍 Buscar por código o URL..."
+                   aria-label="Buscar enlaces por código o URL"
+                   onkeyup="aplicarFiltros()">
+        </div>
+        
+        <div class="toolbar__filters">
+            <label for="sortSelect" class="visually-hidden">Ordenar enlaces</label>
+            <select id="sortSelect" 
+                    class="filter-select" 
+                    aria-label="Seleccionar criterio de ordenación"
+                    onchange="aplicarFiltros()">
+                <option value="date_desc">📅 Más recientes</option>
+                <option value="date_asc">📅 Más antiguos</option>
+                <option value="clicks_desc">🔥 Más visitados</option>
+                <option value="clicks_asc">🧊 Menos visitados</option>
+                <option value="alpha_asc">🔤 A-Z (Código)</option>
+            </select>
+        </div>
+        
+        <div class="toolbar__actions">
+            <button class="btn-add" 
+                    onclick="abrirModalCrear()"
+                    aria-label="Crear nuevo enlace acortado">
+                <span aria-hidden="true">+</span> Nuevo Link
+            </button>
+        </div>
+    </section>
+
+    <!-- Tabla de enlaces con caption semántico -->
+    <section class="table-section" aria-labelledby="tabla-titulo">
+        <h2 id="tabla-titulo" class="visually-hidden">Lista de enlaces acortados</h2>
+        <div class="table-wrapper">
+            <table role="grid" aria-describedby="tabla-descripcion">
+                <caption id="tabla-descripcion" class="visually-hidden">
+                    Tabla que muestra todos los enlaces acortados con sus estadísticas y opciones de gestión
+                </caption>
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>URL Original</th>
-                        <th>Link Corto</th>
-                        <th style="text-align:center;">Visitas</th>
-                        <th style="text-align:center;">Estado</th>
+                        <th scope="col">Código</th>
+                        <th scope="col">URL Original</th>
+                        <th scope="col">Link Corto</th>
+                        <th scope="col" class="text-center">Visitas</th>
+                        <th scope="col" class="text-center">Estado</th>
+                        <th scope="col" class="text-center" aria-label="Acciones">Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="table-body">
-                    <tr><td colspan="5" style="text-align:center;">Cargando...</td></tr>
+                <tbody id="table-body" role="rowgroup">
+                    <tr>
+                        <td colspan="6" class="text-center" role="cell">
+                            <span aria-live="polite" aria-busy="true">Cargando enlaces...</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
+</main>
 
-    </main>
+<!-- Modal con semántica de diálogo -->
+<dialog id="modal" class="modal-overlay" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content" role="document">
+        <header class="modal-header">
+            <h2 id="modal-title">Editar URL</h2>
+            <button class="modal-close" onclick="cerrarModal()" aria-label="Cerrar modal">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </header>
+        
+        <form id="modal-form" class="modal-form" onsubmit="guardarCambios(); return false;">
+            <input type="hidden" id="edit-key" name="edit-key">
+            
+            <div class="input-group">
+                <label for="edit-url" class="input-label">URL Destino:</label>
+                <input type="url" 
+                       id="edit-url" 
+                       name="url" 
+                       class="input-field" 
+                       required
+                       aria-required="true"
+                       placeholder="https://ejemplo.com"
+                       aria-describedby="url-help">
+                <small id="url-help" class="help-text">Introduce la URL completa incluyendo https://</small>
+            </div>
+
+            <div class="input-group" id="status-group">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" 
+                           id="edit-active" 
+                           name="active"
+                           aria-checked="true">
+                    <label for="edit-active" class="checkbox-label">
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        Enlace Activo
+                    </label>
+                </div>
+            </div>
+
+            <footer class="modal-actions">
+                <button type="button" 
+                        class="btn-secondary" 
+                        onclick="cerrarModal()"
+                        aria-label="Cancelar cambios">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                        class="btn-main" 
+                        id="btn-save"
+                        aria-label="Guardar cambios">
+                    Guardar
+                </button>
+            </footer>
+        </form>
+    </div>
+</dialog>
 
     <script src="/static/admin.js"></script>
 </body>

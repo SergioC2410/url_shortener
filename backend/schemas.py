@@ -1,55 +1,73 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
-from pydantic import BaseModel, Field, ConfigDict  
 
-# 1. BaseSchema
+# ==============================================================================
+# 1. ESQUEMA BASE (SHARED)
+# ==============================================================================
+
 class URLBase(BaseModel):
+    """
+    Propiedades compartidas que toda URL debe tener.
+    Se usa como base para evitar repetir código en los otros esquemas.
+    """
     target_url: str = Field(
         ..., 
         title="URL Objetivo", 
-        description="La dirección web original a acortar",
-        # CAMBIO 1: 'example' ahora va dentro de json_schema_extra
+        description="La dirección web original a la que queremos redirigir",
+        # En Pydantic v2, los ejemplos van dentro de 'json_schema_extra'
         json_schema_extra={"example": "https://www.google.com"}
     )
 
-class URL(URLBase):
-    is_active: bool
-    clicks: int
+# ==============================================================================
+# 2. ESQUEMAS DE ENTRADA (INPUTS)
+# ==============================================================================
 
-    model_config = ConfigDict(from_attributes=True)
-    
-# 2. Schema de Creación (Input)
 class URLCreate(URLBase):
     """
-    Schema para recibir los datos de creación.
-    Solo necesitamos la URL original.
+    Datos necesarios para CREAR una nueva URL corta.
+    Hereda de URLBase, por lo que solo exige 'target_url'.
     """
     pass
 
-# 3. Schema de Respuesta (Output)
+class URLUpdate(BaseModel):
+    """
+    Datos para EDITAR una URL existente.
+    Todos los campos son opcionales porque el usuario puede querer
+    cambiar solo el link, solo el estado, o ambos.
+    """
+    target_url: Optional[str] = Field(None, description="Nueva dirección web (opcional)")
+    is_active: Optional[bool] = Field(None, description="Activar o desactivar el enlace")
+
+# ==============================================================================
+# 3. ESQUEMAS DE SALIDA (OUTPUTS)
+# ==============================================================================
+
 class URLInfo(URLBase):
     """
-    Schema para devolver la información al cliente.
-    Incluye datos generados por el sistema (key, clicks, status).
+    Schema completo para devolver información al cliente (Frontend).
+    Incluye datos de la DB (clicks, estado) y datos calculados (url_completa).
     """
+    id: int
     is_active: bool
     clicks: int
-    key: str = Field(..., title="Clave Única", description="El código corto generado")
+    key: str = Field(..., title="Clave Única", description="El código corto generado (ej: AbC12)")
     
-    # Optional porque este campo lo calculamos en el código
-    url_completa: Optional[str] = Field(None, description="URL corta completa lista para usar")
+    # Campo calculado: No se guarda en la DB, se genera al vuelo en el main.py
+    url_completa: Optional[str] = Field(None, description="URL corta completa lista para compartir")
 
-    # --- AQUÍ ESTÁ EL CAMBIO ---
-    # Eliminamos "class Config" y usamos "model_config"
+    # Configuración del Modelo (Pydantic v2)
     model_config = ConfigDict(
+        # 'from_attributes=True' permite a Pydantic leer datos de SQLAlchemy
         from_attributes=True,
+        
+        # Ejemplo para la documentación automática (Swagger UI)
         json_schema_extra={
             "example": {
                 "target_url": "https://www.google.com",
                 "is_active": True,
-                "clicks": 0,
+                "clicks": 42,
                 "key": "A8sK2",
-                "url_completa": "http://localhost:8000/A8sK2"
+                "url_completa": "https://tu-dominio.com/A8sK2"
             }
         }
     )
