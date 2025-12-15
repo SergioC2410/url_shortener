@@ -1,5 +1,5 @@
 # 🔗 Shorty | The Premium Link Chopper
-
+> [🇪🇸 Leer documentación en Español](README.es.md)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Blazing%20Fast-009688)
 ![Status](https://img.shields.io/badge/Status-Live%20%26%20Kicking-success)
