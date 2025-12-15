@@ -1,6 +1,5 @@
 # URL Shortener API 🔗
 
-# URL Shortener API
 
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688)
@@ -60,6 +59,13 @@ Once the server is running, you can access the interactive documentation:
 
 * **Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 * **ReDoc:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+## 🎨 UX/UI Planning & Prototyping
+
+This project began with a deliberate design phase to ensure a clear user experience (UX) and visual hierarchy before implementation. This demonstrates the process of translating a conceptual idea into a functional product.
+
+* **Design Tool:** Figma
+* **Initial Mockup/Wireframe:** [View Figma Plan Here](https://www.figma.com/design/a4PYuK2S0dJIH3yEOYqUUp/Wireframe-URL-Shortener?node-id=0-1&p=f&t=yiobX4dwB1bvFjlo-0)
 
 ## 🗂️ Project Structure
 
