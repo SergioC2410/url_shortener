@@ -5,7 +5,7 @@
 ![Render](https://img.shields.io/badge/Deployed%20on-Render-black)
 
 
-> [🇪🇸 Leer documentación en Español](README.es.md)
+> [Leer documentación en Español](README.es.md)
 
 > **See it in action:** [https://shorty-the-cutter-url.onrender.com/](https://shorty-the-cutter-url.onrender.com/)
 
