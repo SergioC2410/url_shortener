@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/urls";
+const API_URL = "/urls";
 
 async function cargarDatos() {
     const tableBody = document.getElementById("table-body");

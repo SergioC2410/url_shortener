@@ -92,12 +92,19 @@ def read_urls(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), re
 
 @app.post("/url", response_model=schemas.URLInfo)
 def create_url(url: schemas.URLCreate, request: Request, db: Session = Depends(get_db)):
+    # 1. Validación manual extra: Debe tener un punto (ej: .com, .net)
+    if "." not in url.target_url:
+         raise HTTPException(status_code=400, detail="La URL debe contener un dominio válido (ej: google.com)")
+
+    # 2. Sanitización (agregar http si falta)
     if "http" not in url.target_url:
         url.target_url = "http://" + url.target_url
 
+    # 3. Validación de librería
     if not validators.url(url.target_url):
         raise HTTPException(status_code=400, detail="La URL no es válida.")
 
+    # ... el resto del código sigue igual ...
     db_url = crud.create_url(db=db, url=url)
     base_url = str(request.base_url)
     db_url.url_completa = f"{base_url}{db_url.key}"

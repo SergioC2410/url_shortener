@@ -1,5 +1,5 @@
 // URL del Backend (Configuración centralizada)
-const API_URL = "http://localhost:8000/url";
+const API_URL = "/url";
 
 async function acortarUrl() {
     const input = document.getElementById("longUrl");
